@@ -2,6 +2,12 @@ import hashlib
 import string
 import random
 
+
+# ======================================================== #
+# ================= GENERATE NOISE VALUES ================ #
+# ======================================================== #
+
+
 # Generate random string with specified number of letters
 def RandomString(letters=10):
     chars = string.ascii_letters
@@ -44,6 +50,12 @@ def HashToNoiseNormalised(hash, profile=None, modulus=1000):
 
 
 
+# ======================================================== #
+# ====================== ITERATIONS ====================== #
+# ======================================================== #
+
+
+
 # Return an average noise value over 'iters' iterations
 # Uses letters=N to generate random string with N upper/lowercase characters - hash of this string is used to generate noise value 
 def NoiseValueIterations(iters=1, letters=10, modulus=1000):
@@ -62,7 +74,26 @@ def NoiseValueIterations(iters=1, letters=10, modulus=1000):
     return noiseValues
 
 
+# Returns the average noise value over specified number of iterations
+def AverageNoiseValue(iters, letters=10, modulus=1000):
+    values = NoiseValueIterations(iters=iters, letters=letters, modulus=modulus)
 
+    return sum(values) / len(values)
+
+
+# Returns average after re-centering values
+def AverageRecenteredNoiseValue(iters, letters=10, modulus=1000):
+    values = NoiseValueIterations(iters=iters, letters=letters, modulus=modulus)
+
+    recenteredValues = RecenterNoiseValues(values, oldCenter=0.5, newCenter=1)
+
+    return sum(recenteredValues) / len(recenteredValues)
+
+
+
+# ======================================================== #
+# ======================= UTILITIES ====================== #
+# ======================================================== #
 
 
 # Add bias to normalised (0-1) noise values to center all values around 'newCenter' (old center = 0.5) 
