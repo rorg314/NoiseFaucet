@@ -1,7 +1,11 @@
 from collections import defaultdict
 import datetime
-from noise import AverageNoiseValue, AverageRecenteredNoiseValue
+from random import random
 
+
+
+from noise import AverageNoiseValue, AverageZeroCenteredNoiseValue
+from util import BtcToSat
 
 
 class Site():
@@ -21,7 +25,6 @@ class User():
         # Add user to site
         self.site = site
         site.allUsers.append(self)
-
         # Username
         self.name = name
 
@@ -32,31 +35,44 @@ class User():
         # List of all user transactions
         self.allTransactions = list()
 
-        
-
 
 class Transaction():
-    def __init__(self, site:Site, user:User, amount:int, iters=100):
-        # Ref to the site
-        self.site = site
-        # Store transaction time
-        self.time = datetime.time()
-        
-        
+    def __init__(self, user:User, amount:int, iters=100):
         # User that initiated the transaction
         self.user = user
+        # Store transaction time
+        self.time = datetime.time()
+        # Add transaction to site
+        self.user.site.allTransactions.append(self)
+        # Add transaction to user
+        self.user.allTransactions.append(self)
+
         # Amount the user sent
         self.amount = amount
 
-        # Calculated noise value (normalised between 0.5 - 1.5 )
-        self.avgNoiseValue = AverageRecenteredNoiseValue(iters, letters=10, modulus=1000)
+        # Calculated noise value (normalised between -0.5 to 0.5 )
+        self.avgNoiseValue = AverageZeroCenteredNoiseValue(iters, letters=10, modulus=1000)
 
+        # Noise multiplied value of this transaction 
+        self.noiseMultipliedValue = self.amount * self.avgNoiseValue
+
+        # Overall difference, positive returned to user negative to site
+        self.diff = self.noiseMultipliedValue - self.amount
+
+
+# ======================================================== #
+# ===================== TRANSACTIONS ===================== #
+# ======================================================== #
+
+
+# Returns true if user has enough to send transaction
 def ValidTransaction(user:User, amount:int):
     return user.userBalance > amount
 
 
 # User sends btc to site (amounts must be in sats)
-def UserMakeTransaction(user:User, amount:int):
+def UserMakeTransaction(user:User, amount:int, iters:int, txFee=1000):
+    
     # Check if valid transaction
     if(not ValidTransaction(user, amount)):
         print("User balance was too low! User: " + user.name)
@@ -64,10 +80,48 @@ def UserMakeTransaction(user:User, amount:int):
     
     # Remove amount from user balance
     user.userBalance -= amount
-    # Send to user site balance
-    user.userSiteBalance += amount
+
+    # Send to user site balance (- txFee)
+    user.userSiteBalance += amount - txFee
+
+    # Create the transaction object
+    transaction = Transaction(user, amount, iters=iters)
+
+    # Add/subtract diff from user site balance
+    if(transaction.diff > 0):
+        user.userSiteBalance += transaction.diff
+    elif(transaction.diff <= 0):
+        user.userSiteBalance -= transaction.diff
+        user.site.siteBalance += transaction.diff
+
+
+
+# ======================================================== #
+# ====================== TEST USERS ====================== #
+# ======================================================== #
+
+
+# Create a user with a random balance (as a random % of 1BTC)
+def CreateRandomUser(site:Site, name=""):
+
+    startBal = BtcToSat( 1 / random.range(100) )
+
+    usr = User(name, site, userBalance=startBal)
+
+
+# Create a specified number of random users
+def CreateNumRandomUsers(site:Site, number):
+
+    for i in range(number):
+        CreateRandomUser(site, name=str(i))
 
 
 
 
+# ======================================================== #
+# ========================= STATS ======================== #
+# ======================================================== #
 
+
+def PlotAllTransactionReturns(site:Site):
+    print(2)
