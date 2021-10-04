@@ -4,11 +4,11 @@ from random import random
 
 
 
-from noise import AverageNoiseValue, AverageZeroCenteredNoiseValue
-from util import BtcToSat
+from noise import AverageNoiseValue, AverageOneCenteredNoiseValue
+from util import BtcToSat, SatToBtc
 
 
-class Site():
+class Faucet():
     def __init__(self):
         # Money the site owns
         self.siteBalance = 0
@@ -21,10 +21,10 @@ class Site():
         
 
 class User():
-    def __init__(self, name:str, site:Site, userBalance=0):
+    def __init__(self, name:str, faucet:Faucet, userBalance=0):
         # Add user to site
-        self.site = site
-        site.allUsers.append(self)
+        self.site = faucet
+        faucet.allUsers.append(self)
         # Username
         self.name = name
 
@@ -34,6 +34,9 @@ class User():
         self.userSiteBalance = 0
         # List of all user transactions
         self.allTransactions = list()
+    
+    def __repr__(self) -> str:
+        return self.name
 
 
 class Transaction():
@@ -51,7 +54,7 @@ class Transaction():
         self.amount = amount
 
         # Calculated noise value (normalised between -0.5 to 0.5 )
-        self.avgNoiseValue = AverageZeroCenteredNoiseValue(iters, letters=10, modulus=1000)
+        self.avgNoiseValue = AverageOneCenteredNoiseValue(iters, letters=10, modulus=1000)
 
         # Noise multiplied value of this transaction 
         self.noiseMultipliedValue = self.amount * self.avgNoiseValue
@@ -93,6 +96,9 @@ def UserMakeTransaction(user:User, amount:int, iters:int, txFee=1000):
     elif(transaction.diff <= 0):
         user.userSiteBalance -= transaction.diff
         user.site.siteBalance += transaction.diff
+    
+    print("User " + str(user.name) + " : sent=" + str(SatToBtc(amount)) + " : noise=" + f"{transaction.avgNoiseValue:1.3f}" + " : diff=" + str(SatToBtc(transaction.diff)))
+
 
 
 
@@ -102,20 +108,27 @@ def UserMakeTransaction(user:User, amount:int, iters:int, txFee=1000):
 
 
 # Create a user with a random balance (as a random % of 1BTC)
-def CreateRandomUser(site:Site, name=""):
+def CreateRandomUser(faucet:Faucet, name=""):
 
-    startBal = BtcToSat( 1 / random.range(100) )
+    startBal = BtcToSat( random.range(1, 100) / 100 )
 
-    usr = User(name, site, userBalance=startBal)
+    usr = User(name, faucet, userBalance=startBal)
 
 
 # Create a specified number of random users
-def CreateNumRandomUsers(site:Site, number):
+def CreateNumRandomUsers(faucet:Faucet, number):
 
     for i in range(number):
-        CreateRandomUser(site, name=str(i))
+        CreateRandomUser(faucet, name=str(i))
 
 
+def CreateTestFacuet(users=1):
+    
+    faucet = Faucet()
+    #CreateNumRandomUsers(faucet, users)
+    testUser = User('Test', faucet, userBalance=BtcToSat(1))
+
+    return faucet, testUser
 
 
 # ======================================================== #
@@ -123,5 +136,5 @@ def CreateNumRandomUsers(site:Site, number):
 # ======================================================== #
 
 
-def PlotAllTransactionReturns(site:Site):
+def PlotAllTransactionReturns(site:Faucet):
     print(2)

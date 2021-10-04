@@ -82,10 +82,10 @@ def AverageNoiseValue(iters, letters=10, modulus=1000):
 
 
 # Returns average after re-centering values
-def AverageZeroCenteredNoiseValue(iters, letters=10, modulus=1000):
+def AverageOneCenteredNoiseValue(iters, letters=10, modulus=1000):
     values = NoiseValueIterations(iters=iters, letters=letters, modulus=modulus)
 
-    recenteredValues = RecenterNoiseValues(values, oldCenter=0.5, newCenter=0)
+    recenteredValues = RecenterNoiseValues(values, oldCenter=0.5, newCenter=1)
 
     return sum(recenteredValues) / len(recenteredValues)
 

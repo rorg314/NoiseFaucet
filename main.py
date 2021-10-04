@@ -1,13 +1,19 @@
-from matplotlib import pyplot as plt
-import string
-import random
-from noise import *
 
+from faucet import *
 
 def main():
-    print("hi")
+    print("main")
+    
+    faucet = Faucet()
+    testUser = User('Test', faucet, userBalance=BtcToSat(1))
 
-   
+    iters = 1000
+
+    UserMakeTransaction(testUser, BtcToSat(0.1), iters)
+
+
+
+
 
 
 
