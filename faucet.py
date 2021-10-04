@@ -5,7 +5,7 @@ from random import random
 
 
 from noise import AverageNoiseValue, AverageOneCenteredNoiseValue
-from util import BtcToSat, SatToBtc
+from util import BtcStr, BtcToSat, SatToBtc
 
 
 class Faucet():
@@ -97,7 +97,7 @@ def UserMakeTransaction(user:User, amount:int, iters:int, txFee=1000):
         user.userSiteBalance -= transaction.diff
         user.site.siteBalance += transaction.diff
     
-    print("User " + str(user.name) + " : sent=" + str(SatToBtc(amount)) + " : noise=" + f"{transaction.avgNoiseValue:1.3f}" + " : diff=" + str(SatToBtc(transaction.diff)))
+    print("User " + str(user.name) + " : sent=" + BtcStr(SatToBtc(amount)) + " : noise=" + f"{transaction.avgNoiseValue:1.5f}" + " : diff=" + BtcStr(SatToBtc(transaction.diff)))
 
 
 

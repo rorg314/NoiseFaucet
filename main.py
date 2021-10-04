@@ -1,6 +1,8 @@
 
 from faucet import *
 
+
+
 def main():
     print("main")
     
@@ -9,7 +11,7 @@ def main():
 
     iters = 1000
 
-    UserMakeTransaction(testUser, BtcToSat(0.1), iters)
+    UserMakeTransaction(testUser, BtcToSat(0.001), iters)
 
 
 
