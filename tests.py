@@ -13,7 +13,7 @@ def test_AverageOverIterations(iterations=1e3, modulus=1000):
         # Hash hex value
         hashHex = HashValueHex(data)
         # Convert to modulus noise value
-        noiseValue = HashToNoise(hashHex, modulus=modulus) / modulus
+        noiseValue = HashToNoiseNormalised(hashHex, modulus=modulus)
         allNoiseValues.append(noiseValue)
         print(i)
         i = i+1
@@ -26,7 +26,7 @@ def test_AverageOverIterations(iterations=1e3, modulus=1000):
     print("Average noise value = " + str(avg))
 
 
-def test_AverageOverBatchOfIterations(batches=1e3, iter=1e3, modulus=1000):
+def test_AverageOverBatchOfIterations(batches=1e3, iter=1e3, modulus=100000):
     b = 0 
     allBatchAverages = list()
     while (b < batches):
