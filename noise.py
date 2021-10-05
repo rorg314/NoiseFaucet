@@ -13,6 +13,7 @@ def RandomString(letters=10):
     chars = string.ascii_letters
     return  ''.join(random.choice(chars) for i in range(letters)) 
 
+
 # Get hash value from input string
 def StringToHexHash(input):
     # sha256 hasher
@@ -31,7 +32,7 @@ def StringToHexHash(input):
     return h.hexdigest()
 
 
-# Convert sha-256 hash to noise value using modular arithmetic (noise value in range 1-modulus)
+# Convert sha-256 hash to noise value using modular arithmetic (noise value in range [1, modulus])
 def HashToNoiseModulus(hash, profile=None, modulus=1000):
 
     intValue = int(hash, base=16)
