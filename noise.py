@@ -33,7 +33,7 @@ def StringToHexHash(input):
 
 
 # Convert sha-256 hash to noise value using modular arithmetic (noise value in range [1, modulus])
-def HashToNoiseModulus(hash, profile=None, modulus=1000):
+def HashToNoiseModulus(hash, modulus=1000):
 
     intValue = int(hash, base=16)
 
@@ -46,8 +46,8 @@ def HashToNoiseModulus(hash, profile=None, modulus=1000):
 
 
 # Normalise modular hash value by dividing by modulus
-def HashToNoiseNormalised(hash, profile=None, modulus=1000):
-    return HashToNoiseModulus(hash, profile=profile, modulus=modulus) / modulus
+def HashToNoiseNormalised(hash, modulus=1000):
+    return HashToNoiseModulus(hash, modulus=modulus) / modulus
 
 
 

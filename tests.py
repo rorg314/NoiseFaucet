@@ -81,11 +81,11 @@ def test_NetDiffAfterBatches(batches=1e2, num=1e2):
 
 
 # Test number of transactions before bankrupt
-def test_NumUserTransactions(amount=BtcToSat(0.01), num=1e3):
+def test_NumUserTransactions(amount=BtcToSat(0.01), num=1e5):
     faucet = Faucet()
     # Start with 1 BTC
     testUser = User('Test', faucet, userSiteBalance=BtcToSat(1))
-    iters = 10000
+    iters = 1000
     
     userSiteBalances = list()
     userSiteBalances.append(testUser.userSiteBalance)
