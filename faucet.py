@@ -21,7 +21,7 @@ class Faucet():
         
 
 class User():
-    def __init__(self, name:str, faucet:Faucet, userBalance=0):
+    def __init__(self, name:str, faucet:Faucet, userSiteBalance=0):
         # Add user to site
         self.site = faucet
         faucet.allUsers.append(self)
@@ -29,9 +29,9 @@ class User():
         self.name = name
 
         # Balance the user has (NOT on site)
-        self.userBalance = userBalance
+        self.userBalance = 0
         # Coins the user has on the site
-        self.userSiteBalance = 0
+        self.userSiteBalance = userSiteBalance
         # List of all user transactions
         self.allTransactions = list()
     
@@ -70,11 +70,11 @@ class Transaction():
 
 # Returns true if user has enough to send transaction
 def ValidTransaction(user:User, amount:int):
-    return user.userBalance > amount
+    return user.userSiteBalance > amount
 
 
 # User sends btc to site (amounts must be in sats)
-def UserMakeTransaction(user:User, amount:int, iters:int, txFee=1000):
+def UserMakeTransaction(user:User, amount:int, iters:int):
     
     # Check if valid transaction
     if(not ValidTransaction(user, amount)):
@@ -82,20 +82,17 @@ def UserMakeTransaction(user:User, amount:int, iters:int, txFee=1000):
         return
     
     # Remove amount from user balance
-    user.userBalance -= amount
-
-    # Send to user site balance (- txFee)
-    user.userSiteBalance += amount - txFee
+    user.userSiteBalance -= amount
 
     # Create the transaction object
     transaction = Transaction(user, amount, iters=iters)
 
+    # Return the amount to the user
+    user.userSiteBalance += amount
+
     # Add/subtract diff from user site balance
-    if(transaction.diff > 0):
-        user.userSiteBalance += transaction.diff
-    elif(transaction.diff <= 0):
-        user.userSiteBalance -= transaction.diff
-        user.site.siteBalance += abs(transaction.diff)
+    user.userSiteBalance += transaction.diff
+    user.site.siteBalance -= transaction.diff
     
     return transaction
 
